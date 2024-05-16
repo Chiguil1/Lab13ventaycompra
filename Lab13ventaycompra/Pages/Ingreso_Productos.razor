@@ -1,0 +1,109 @@
+﻿@page "/ingreso"
+@inject HttpClient http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+
+<h3>Ingreso_Productos</h3>
+
+<EditForm Model="@electronicos" OnValidSubmit="@Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label for="Codigo">Ingrese Codigo:</label>
+        <InputText id="Codigo" @bind-Value="electronicos.Codigo" class="form-control" />
+        <ValidationMessage For="() => electronicos.Codigo" />
+    </div>
+    <div class="form-group">
+        <label for="Nombre">Ingrese Nombre:</label>
+        <InputText id="Nombre" @bind-Value="electronicos.Nombre" class="form-control" />
+        <ValidationMessage For="() => electronicos.Nombre" />
+    </div>
+    <div class="form-group">
+        <label for="Descripcion">Ingrese Descripcion:</label>
+        <InputText id="Descripcion" @bind-Value="electronicos.Descripcion" class="form-control" />
+        <ValidationMessage For="() => electronicos.Descripcion" />
+    </div>
+    <div class="form-group">
+        <label for="Preciocompra">Ingrese Preciocompra:</label>
+        <InputNumber id="Preciocompra" @bind-Value="electronicos.Preciocompra" class="form-control" />
+        <ValidationMessage For="() => electronicos.Preciocompra" />
+    </div>
+    <div class="form-group">
+        <label for="Precioventa">Ingrese Precioventa:</label>
+        <InputNumber id="Precioventa" @bind-Value="electronicos.Precioventa" class="form-control" />
+        <ValidationMessage For="() => electronicos.Precioventa" />
+    </div>
+    <div class="form-group">
+        <label for="Tiempogaran">Ingrese Tiempogaran:</label>
+        <InputNumber id="Tiempogaran" @bind-Value="electronicos.Tiempogaran" class="form-control" />
+        <ValidationMessage For="() => electronicos.Tiempogaran" />
+    </div>
+    <div class="form-group">
+        <label for="Voltaje">Ingrese Voltaje:</label>
+        <InputText id="Voltaje" @bind-Value="electronicos.Voltaje" class="form-control" />
+        <ValidationMessage For="() => electronicos.Voltaje" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</EditForm>
+
+@if (electronicos != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Codigo</th>
+                <th>Nombre</th>
+                <th>Descripcion</th>
+                <th>PrecioC</th>
+                <th>PrecioV</th>
+                <th>Garantia</th>
+                <th>Voltaje</th>
+                <th>Editar</th>
+                <th>Borrar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var electronico in elec)
+            {
+                <tr>
+                    <td>@electronico.Codigo</td>
+                    <td>@electronico.Nombre</td>
+                    <td>@electronico.Descripcion</td>
+                    <td>@electronico.Preciocompra</td>
+                    <td>@electronico.Precioventa</td>
+                    <td>@electronico.Tiempogaran</td>
+                    <td>@electronico.Voltaje</td>
+                    <button class="btn btn-warning"
+                            @onclick="@(() =>NavigationManager.NavigateTo($"/producto-editar/{electronico.Voltaje}"))">
+                        Editar
+                    </button>
+                    <td><button class="btn btn-danger" @onclick="@(()=>Borrar(electronico.Voltaje))">Submit</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Electronicos electronicos = new Electronicos();
+    List<Electronicos> elec = new List<Electronicos>();
+    protected async Task Guardar()
+    {
+        elec.Add(electronicos); 
+        electronicos = new Electronicos();
+        await localStorage.SetItemAsync("electronicos", elec);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        elec = await localStorage.GetItemAsync<List<Electronicos>>("electronicos");
+    }
+
+    protected async Task Borrar(string Voltaje)
+    {
+        Electronicos productoBorrar = elec.Find(c => c.Voltaje == Voltaje);
+        elec.Remove(productoBorrar);
+        await localStorage.SetItemAsync("electronicos", elec);
+    }
+}

@@ -1,0 +1,68 @@
+﻿@page "/producto-editar/{voltaje}"
+@inject HttpClient http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+
+<h3>Edicion_Productos</h3>
+
+<EditForm Model="@electronicos" OnValidSubmit="@Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label for="Codigo">Ingrese Codigo:</label>
+        <InputText id="Codigo" @bind-Value="electronicos.Codigo" class="form-control" />
+        <ValidationMessage For="() => electronicos.Codigo" />
+    </div>
+    <div class="form-group">
+        <label for="Nombre">Ingrese Nombre:</label>
+        <InputText id="Nombre" @bind-Value="electronicos.Nombre" class="form-control" />
+        <ValidationMessage For="() => electronicos.Nombre" />
+    </div>
+    <div class="form-group">
+        <label for="Descripcion">Ingrese Descripcion:</label>
+        <InputText id="Descripcion" @bind-Value="electronicos.Descripcion" class="form-control" />
+        <ValidationMessage For="() => electronicos.Descripcion" />
+    </div>
+    <div class="form-group">
+        <label for="Preciocompra">Ingrese Preciocompra:</label>
+        <InputNumber id="Preciocompra" @bind-Value="electronicos.Preciocompra" class="form-control" />
+        <ValidationMessage For="() => electronicos.Preciocompra" />
+    </div>
+    <div class="form-group">
+        <label for="Precioventa">Ingrese Precioventa:</label>
+        <InputNumber id="Precioventa" @bind-Value="electronicos.Precioventa" class="form-control" />
+        <ValidationMessage For="() => electronicos.Precioventa" />
+    </div>
+    <div class="form-group">
+        <label for="Tiempogaran">Ingrese Tiempogaran:</label>
+        <InputNumber id="Tiempogaran" @bind-Value="electronicos.Tiempogaran" class="form-control" />
+        <ValidationMessage For="() => electronicos.Tiempogaran" />
+    </div>
+    <div class="form-group">
+        <label for="Voltaje">Ingrese Voltaje:</label>
+        <InputText id="Voltaje" @bind-Value="electronicos.Voltaje" class="form-control" />
+        <ValidationMessage For="() => electronicos.Voltaje" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</EditForm>
+
+@code {
+    private Electronicos electronicos = new Electronicos();
+    List<Electronicos> elec = new List<Electronicos>();
+    [Parameter]
+    public string Voltaje { get;  set; }
+    protected async Task Guardar()
+    {
+        await localStorage.SetItemAsync("electronicos", elec);
+        NavigationManager.NavigateTo("/ingreso");
+
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        elec = await localStorage.GetItemAsync<List<Electronicos>>("electronicos");
+
+        electronicos = elec.FirstOrDefault(c => c.Voltaje == Voltaje);
+    }
+}
